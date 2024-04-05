@@ -5,7 +5,7 @@ import { connect } from "cloudflare:sockets";
 
 let userID = "4e6479dc-8eec-405c-a9f3-d6f05f27c6a3";
 
-const proxyIPs = ['workers.cloudflare.cyou', 'cdn.xn--b6gac.eu.org'];// OR USE const proxyIPs = ['cdn.xn--b6gac.eu.org', 'cdn-all.xn--b6gac.eu.org', 'edgetunnel.anycast.eu.org'];
+const proxyIPs = ['workers.cloudflare.cyou'];// OR USE const proxyIPs = ['cdn.xn--b6gac.eu.org', 'cdn-all.xn--b6gac.eu.org', 'edgetunnel.anycast.eu.org'];
 
 let proxyIP = proxyIPs[Math.floor(Math.random() * proxyIPs.length)];
 
@@ -171,7 +171,7 @@ export default {
                             await updateDataset(
                             env,
                             host, 
-                            "https://8.8.8.8/dns-query", 
+                            "https://94.140.14.14/dns-query",
                             "1.1.1.1", 
                             "100", 
                             "200", 
