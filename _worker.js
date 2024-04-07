@@ -2124,7 +2124,7 @@ const renderLoginPage = async () => {
         <div class="container">
             <h1>0×1 Panel <span style="font-size: smaller;"> </span> 😆😆 </h1>
             <div class="form-container">
-                <h2>پسوورد admin هستش</h2>
+                <h2> هستش admin پسوورد </h2>
                 <form id="loginForm">
                     <div class="form-control">
                         <label for="password">Password</label>
@@ -2152,7 +2152,7 @@ const renderLoginPage = async () => {
                 if (response.ok) {
                     window.location.href = '/panel';
                 } else {
-                    passwordError.textContent = 'کصخل گفتم: admin';
+                    passwordError.textContent = 'خنگول گفتم: admin';
                     const errorMessage = await response.text();
                     console.error('Login failed:', errorMessage);
                 }
