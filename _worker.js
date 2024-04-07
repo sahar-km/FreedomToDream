@@ -171,7 +171,7 @@ export default {
                             await updateDataset(
                             env,
                             host, 
-                            "https://94.140.14.14/dns-query",
+                            "https://94.140.14.14/dns-query", // OR USE "https://8.8.8.8/dns-query"
                             "1.1.1.1", 
                             "100", 
                             "200", 
@@ -1042,7 +1042,7 @@ const getVLESSConfig = async (env) => {
         )}&fp=randomized&alpn=http/1.1&path=/${encodeURIComponent(
             `${getRandomPath(16)}?ed=2048`
         )}#${encodeURIComponent(
-            `💦 BPB - ${addr}`
+            `❄️ - ${addr}`
         )}\n`;
     });
 
@@ -1403,7 +1403,7 @@ const getFragVLESSConfig = async (env) => {
         };
 
         let fragConfig = clone(fragConfigTemp);
-        fragConfig.remarks = `💦 BPB Frag - ${addr}`;
+        fragConfig.remarks = `🌱 Fragment - ${addr}`;
         fragConfig.outbounds = [{ ...proxyOutbound}, ...fragConfig.outbounds];
         delete fragConfig.observatory;
         delete fragConfig.routing.balancers;
@@ -1428,7 +1428,7 @@ const getFragVLESSConfig = async (env) => {
     });
 
     let bestPingConfig = clone(fragConfigTemp);
-    bestPingConfig.remarks = '💦 BPB Frag - Best Ping 💥';
+    bestPingConfig.remarks = '🌱 Fragment - Best Ping ⚡️';
     bestPingConfig.outbounds = [...outbounds, ...bestPingConfig.outbounds];
     let bestPingNeko = clone(fragConfigNekorayTemp);
     bestPingNeko.outbounds = [ ...outbounds, ...bestPingNeko.outbounds];
@@ -1690,7 +1690,7 @@ const renderPage = async (env) => {
 	</head>
 	
 	<body>
-		<h1 style="text-align: center; color: #2980b9">BPB Panel <span style="font-size: smaller;">2.2</span> 💦</h1>
+		<h1 style="text-align: center; color: #2980b9">0×1 Panel  <span style="font-size: smaller;"> </span> 😩😩</h1>
 		<div class="form-container">
             <h2>FRAGMENT SETTINGS ⚙️</h2>
 			<form id="configForm">
@@ -1724,7 +1724,7 @@ const renderPage = async (env) => {
 				</div>
                 <h2>CLEAN IP SETTINGS ⚙️</h2>
 				<div class="form-control">
-					<label>✨ Clean IPs</label>
+					<label>✨💫 Clean IPs</label>
 					<input type="text" id="cleanIPs" name="cleanIPs" value="${cleanIPs.replaceAll(",", " , ")}">
 				</div>
                 <div class="form-control">
@@ -1738,7 +1738,7 @@ const renderPage = async (env) => {
                 </div>
 				<div id="apply" class="form-control">
 					<div style="grid-column: 2; width: 100%;">
-						<input type="submit" id="applyButton" class="button" value="APPLY SETTINGS 💥" form="configForm">
+						<input type="submit" id="applyButton" class="button" value="APPLY SETTINGS 🎗" form="configForm">
 					</div>
 				</div>
 			</form>
@@ -2122,9 +2122,9 @@ const renderLoginPage = async () => {
     </head>
     <body>
         <div class="container">
-            <h1>BPB Panel <span style="font-size: smaller;">2.2</span> 💦</h1>
+            <h1>0×1 Panel <span style="font-size: smaller;"> </span> 😆😆 </h1>
             <div class="form-container">
-                <h2>User Login</h2>
+                <h2>پسوورد admin هستش</h2>
                 <form id="loginForm">
                     <div class="form-control">
                         <label for="password">Password</label>
@@ -2152,7 +2152,7 @@ const renderLoginPage = async () => {
                 if (response.ok) {
                     window.location.href = '/panel';
                 } else {
-                    passwordError.textContent = '⚠️ Wrong Password!';
+                    passwordError.textContent = 'کصخل گفتم: admin';
                     const errorMessage = await response.text();
                     console.error('Login failed:', errorMessage);
                 }
