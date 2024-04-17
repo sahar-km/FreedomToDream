@@ -11,7 +11,7 @@ let userID = '4e6479dc-8eec-405c-a9f3-d6f05f27c6a3';
 
 
 
-const proxyIPs= ['216.146.25.209'];// OR USE const proxyIPs = ['cdn.xn--b6gac.eu.org', 'cdn-all.xn--b6gac.eu.org', 'edgetunnel.anycast.eu.org'];
+const proxyIPs= ['216.146.25.209', '23.90.144.167'];// OR USE const proxyIPs = ['cdn.xn--b6gac.eu.org', 'cdn-all.xn--b6gac.eu.org', 'edgetunnel.anycast.eu.org'];
 
 let proxyIP = proxyIPs[Math.floor(Math.random() * proxyIPs.length)];
 
