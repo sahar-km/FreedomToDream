@@ -1,23 +1,21 @@
 // @ts-nocheck
-// <!--GAMFC-->version base on commit 43fad05dcdae3b723c53c226f8181fc5bd47223e, time is 2023-06-22 15:20:02 UTC<!--GAMFC-END-->.
+// <!------- time is 2024-04-24 19:26:15 UTC -------!>
 // @ts-ignore
 // Many thanks to github.com/bia-pain-bache
 
 import { connect } from 'cloudflare:sockets';
 
-// How to generate your own UUID:
-// https://www.uuidgenerator.net/
-let userID = '4e6479dc-8eec-405c-a9f3-d6f05f27c6a3';
+// How to generate your own UUID: https://www.uuidgenerator.net/
+let userID = 'cf8cf683-40fa-4cd3-93cd-820071b11c90';
 
-
-
-const proxyIPs= ['216.146.25.209', '23.90.144.167'];// OR USE const proxyIPs = ['cdn.xn--b6gac.eu.org', 'cdn-all.xn--b6gac.eu.org', 'edgetunnel.anycast.eu.org'];
-
+// https://www.nslookup.io/domains/cdn-all.xn--b6gac.eu.org/dns-records/
+const proxyIPs= ['ni.radically.pro'];// OR USE ['cdn-all.xn--b6gac.eu.org', 'cdn.xn--b6gac.eu.org', 'workers.cloudflare.cyou'];
 let proxyIP = proxyIPs[Math.floor(Math.random() * proxyIPs.length)];
 
 let dohURL = 'https://cloudflare-dns.com/dns-query';
 
-let panelVersion = '2.3.2';
+let panelVersion = 'v2.3.4';
+let REvil = 'Freedom to Dream 🤍';
 
 if (!isValidUUID(userID)) {
     throw new Error('uuid is not valid');
@@ -54,55 +52,6 @@ export default {
                                 'Content-Type': 'application/json;charset=utf-8',
                             },
                         });
-
-                    case '/connect': // for test connect to cf socket
-
-                        const [hostname, port] = ['cloudflare.com', '80'];
-                        console.log(`Connecting to ${hostname}:${port}...`);
-
-                        try {
-                            const socket = await connect({
-                                hostname: hostname,
-                                port: parseInt(port, 10),
-                            });
-
-                            const writer = socket.writable.getWriter();
-
-                            try {
-                                await writer.write(
-                                    new TextEncoder().encode(
-                                        'GET / HTTP/1.1\r\nHost: ' + hostname + '\r\n\r\n'
-                                    )
-                                );
-                            } catch (writeError) {
-                                writer.releaseLock();
-                                await socket.close();
-                                return new Response(writeError.message, { status: 500 });
-                            }
-
-                            writer.releaseLock();
-
-                            const reader = socket.readable.getReader();
-                            let value;
-
-                            try {
-                                const result = await reader.read();
-                                value = result.value;
-                            } catch (readError) {
-                                await reader.releaseLock();
-                                await socket.close();
-                                return new Response(readError.message, { status: 500 });
-                            }
-
-                            await reader.releaseLock();
-                            await socket.close();
-
-                            return new Response(new TextDecoder().decode(value), {
-                                status: 200,
-                            });
-                        } catch (connectError) {
-                            return new Response(connectError.message, { status: 500 });
-                        }
                         
                     case `/sub/${userID}`:
 
@@ -122,35 +71,28 @@ export default {
 
                     case '/panel':
 
-                        if (!env.bpb) {
+                        if (typeof env.bpb !== 'object') {
+                            const errorPage = renderErrorPage('KV Dataset is not properly set!', null, true);
                             return new Response(errorPage, { status: 200, headers: {'Content-Type': 'text/html'}});
                         }
 
-                        if (request.method === 'POST') {    
-
-                            if (!(await Authenticate(request, env))) {                            
-                                return new Response('Unauthorized', { status: 401 });  
-                            }
+                        let isAuth = await Authenticate(request, env); 
+                        
+                        if (request.method === 'POST') {
                             
+                            if (!isAuth) return new Response('Unauthorized', { status: 401 });             
                             const formData = await request.formData();
                             await updateDataset(env, formData);
 
                             return new Response('Success', { status: 200 });
                         }
-                            
+                        
+                        if (!isAuth) return Response.redirect(`${url.origin}/login`, 302);
+                        if (! await env.bpb.get('proxySettings')) await updateDataset(env);
+                        let fragConfs = await getFragmentConfigs(env, host, 'nekoray');
+                        let homePage = await renderHomePage(env, host, fragConfs);
 
-                        if (!(await Authenticate(request, env))) {
-                            return Response.redirect(`${url.origin}/login`, 302);        
-                        }
-
-                        if (! await env.bpb.get('proxySettings')) {
-                            await updateDataset(env);
-                        }
-
-                        const fragConfs = await getFragmentConfigs(env, host, 'nekoray');                        
-                        const htmlPage = await renderHomePage(env, host, fragConfs);
-
-                        return new Response(htmlPage, {
+                        return new Response(homePage, {
                             status: 200,
                             headers: {
                                 'Content-Type': 'text/html',
@@ -165,27 +107,22 @@ export default {
                                                       
                     case '/login':
 
-                        if (!env.bpb) {
+                        if (typeof env.bpb !== 'object') {
+                            const errorPage = renderErrorPage('KV Dataset is not properly set!', null, true);
                             return new Response(errorPage, { status: 200, headers: {'Content-Type': 'text/html'}});
                         }
 
-                        if (await Authenticate(request, env)) {
-                            return Response.redirect(`${url.origin}/panel`, 302);       
-                        }
+                        let loginAuth = await Authenticate(request, env);
+                        if (loginAuth) return Response.redirect(`${url.origin}/panel`, 302);
 
                         let secretKey = await env.bpb.get('secretKey');
-                        let pwd = await env.bpb.get('pwd');
-
-
-                        if (!pwd) {
-                            await env.bpb.put('pwd', 'admin');
-                        }
+                        const pwd = await env.bpb.get('pwd');
+                        if (!pwd) await env.bpb.put('pwd', 'admin');
 
                         if (!secretKey) {
                             secretKey = generateSecretKey();
                             await env.bpb.put('secretKey', secretKey);
                         }
-
 
                         if (request.method === 'POST') {
                             const password = await request.text();
@@ -234,17 +171,11 @@ export default {
 
                     case '/panel/password':
 
-                        if (!(await Authenticate(request, env))) {                            
-                            return new Response('Unauthorized!', { status: 401 });  
-                        }
-                        
+                        let passAuth = await Authenticate(request, env);
+                        if (!passAuth) return new Response('Unauthorized!', { status: 401 });           
                         const newPwd = await request.text();
                         const oldPwd = await env.bpb.get('pwd');
-
-                        if (newPwd === oldPwd) {
-                            return new Response('Please enter a new Password!', { status: 400 });
-                        }
-
+                        if (newPwd === oldPwd) return new Response('Please enter a new Password!', { status: 400 });
                         await env.bpb.put('pwd', newPwd);
 
                         return new Response('Success', {
@@ -257,7 +188,6 @@ export default {
 
                     default:
                         // return new Response('Not found', { status: 404 });
-                        // For any other path, reverse proxy to 'www.fmprc.gov.cn' and return the original response
                         url.hostname = 'www.speedtest.net';
                         url.protocol = 'https:';
                         request = new Request(url, request);
@@ -268,7 +198,8 @@ export default {
             }
         } catch (err) {
             /** @type {Error} */ let e = err;
-            return new Response(e.toString());
+            const errorPage = renderErrorPage('Something went wrong!', e.message.toString(), false);
+            return new Response(errorPage, { status: 200, headers: {'Content-Type': 'text/html'}});
         }
     },
 };
@@ -832,8 +763,17 @@ async function handleUDPOutBound(webSocket, vlessResponseHeader, log) {
  */
 
 const getNormalConfigs = async (env, hostName, client) => {
+    let proxySettings = {};
     let vlessWsTls = '';
-    const { cleanIPs } = await env.bpb.get("proxySettings", {type: 'json'});
+
+    try {
+        proxySettings = await env.bpb.get("proxySettings", {type: 'json'});
+    } catch (error) {
+        console.log(error);
+        throw new Error(`An error occurred while getting normal configs - ${error}`);
+    }
+
+    const { cleanIPs } = proxySettings;
     const resolved = await resolveDNS(hostName);
     const Addresses = [
         hostName,
@@ -844,17 +784,19 @@ const getNormalConfigs = async (env, hostName, client) => {
     ];
 
     Addresses.forEach((addr) => {
-        let remark = `💎 ${addr}`;
+        let remark = `🗿 ${addr}`;
         remark = remark.length <= 30 ? remark : `${remark.slice(0,29)}...`;
 
-        vlessWsTls += `vless://${userID}@${addr}:443?encryption=none&security=tls&type=ws&host=${
+        vlessWsTls += 'vless' + `://${userID}@${addr}:443?encryption=none&security=tls&type=ws&host=${
             randomUpperCase(hostName)
         }&sni=${
             randomUpperCase(hostName)
-        }&fp=randomized&alpn=http/1.1&path=/${getRandomPath(16)}#${encodeURIComponent(remark)}\n`;
+        }&fp=randomized&alpn=http/1.1&path=${
+            encodeURIComponent(`/${getRandomPath(16)}?ed=2560`)
+        }#${encodeURIComponent(remark)}\n`;
     });
 
-    const subscription = client === 'singbox' ? btoa(vlessWsTls) : btoa(vlessWsTls.replaceAll('http/1.1', 'http/1.1'));
+     const subscription = client === 'singbox' ? btoa(vlessWsTls) : btoa(vlessWsTls.replaceAll('http/1.1', 'h2,http/1.1'));
     return subscription;
 }
 
@@ -960,10 +902,69 @@ const buildProxyOutbound = async (proxyParams) => {
     return proxyOutbound;
 }
 
+const buildWorkerLessConfig = async (env, client) => {
+    let proxySettings = {};
+
+    try {
+        proxySettings = await env.bpb.get("proxySettings", {type: 'json'});
+    } catch (error) {
+        console.log(error);
+        throw new Error(`An error occurred while generating WorkerLess config - ${error}`);
+    }
+
+    const { remoteDNS, lengthMin,  lengthMax,  intervalMin,  intervalMax, blockAds } = proxySettings;  
+    let fakeOutbound = structuredClone(xrayOutboundTemp);
+    delete fakeOutbound.mux;
+    fakeOutbound.settings.vnext[0].address = 'google.com';
+    fakeOutbound.settings.vnext[0].users[0].id = userID;
+    delete fakeOutbound.streamSettings.sockopt;
+    fakeOutbound.streamSettings.tlsSettings.serverName = 'google.com';
+    fakeOutbound.streamSettings.wsSettings.headers.Host = 'google.com';
+    fakeOutbound.streamSettings.wsSettings.path = '/';
+    delete fakeOutbound.streamSettings.grpcSettings;
+    delete fakeOutbound.streamSettings.tcpSettings;
+    delete fakeOutbound.streamSettings.realitySettings;
+    fakeOutbound.tag = 'fake-outbound';
+
+    let fragConfig = structuredClone(xrayConfigTemp);
+    fragConfig.remarks  = '❄️ Fragment, WorkerLess'
+    fragConfig.dns.servers[0] = remoteDNS;
+    fragConfig.dns.servers.pop();
+    fragConfig.outbounds[0].settings.domainStrategy = 'UseIP';
+    fragConfig.outbounds[0].settings.fragment.length = `${lengthMin}-${lengthMax}`;
+    fragConfig.outbounds[0].settings.fragment.interval = `${intervalMin}-${intervalMax}`;
+    fragConfig.outbounds = [{...fragConfig.outbounds[0]}, {...fakeOutbound}, {...fragConfig.outbounds[1]}, {...fragConfig.outbounds[2]}];
+    fragConfig.routing.rules.pop();
+    if (!blockAds) {
+        delete fragConfig.dns.hosts;
+        fragConfig.routing.rules.pop();
+    }
+    fragConfig.routing.rules[1].domain = ["domain:.ir"];
+    fragConfig.routing.rules.shift();
+    delete fragConfig.routing.balancers;
+    delete fragConfig.observatory;
+
+    if (client === 'nekoray') {
+        fragConfig.inbounds[0].port = 2080;
+        fragConfig.inbounds[1].port = 2081;
+    }
+
+    return fragConfig;
+}
+
 const getFragmentConfigs = async (env, hostName, client) => {
     let Configs = [];
     let outbounds = [];
-    let proxySettings = await env.bpb.get("proxySettings", {type: 'json'});
+    let proxySettings = {};
+    let proxyOutbound;
+
+    try {
+        proxySettings = await env.bpb.get("proxySettings", {type: 'json'});
+    } catch (error) {
+        console.log(error);
+        throw new Error(`An error occurred while getting fragment configs - ${error}`);
+    }
+
     const {
         remoteDNS, 
         localDNS, 
@@ -978,7 +979,6 @@ const getFragmentConfigs = async (env, hostName, client) => {
         outProxyParams
     } = proxySettings;
 
-    let proxyOutbound;
     const resolved = await resolveDNS(hostName);
     const Addresses = [
         hostName,
@@ -993,7 +993,7 @@ const getFragmentConfigs = async (env, hostName, client) => {
         try {
             proxyOutbound = await buildProxyOutbound(proxyParams);
         } catch (error) {
-            console.log(error);
+            console.log('An error occured while parsing chain proxy: ', error);
             proxyOutbound = undefined;
             await env.bpb.put("proxySettings", JSON.stringify({
                 ...proxySettings, 
@@ -1006,7 +1006,7 @@ const getFragmentConfigs = async (env, hostName, client) => {
 
         let fragConfig = structuredClone(xrayConfigTemp);
         let outbound = structuredClone(xrayOutboundTemp);
-        let remark = `💎 Frag - ${addr}`;
+        let remark = `❄️ Frag - ${addr}`;
         delete outbound.mux;
         delete outbound.streamSettings.grpcSettings;
         delete outbound.streamSettings.realitySettings;
@@ -1016,13 +1016,13 @@ const getFragmentConfigs = async (env, hostName, client) => {
         outbound.settings.vnext[0].users[0].id = userID;
         outbound.streamSettings.tlsSettings.serverName = randomUpperCase(hostName);
         outbound.streamSettings.wsSettings.headers.Host = randomUpperCase(hostName);
-        outbound.streamSettings.wsSettings.path = `/${getRandomPath(16)}`;
+        outbound.streamSettings.wsSettings.path = `/${getRandomPath(16)}?ed=2560`;
         
         fragConfig.remarks = remark.length <= 30 ? remark : `${remark.slice(0,29)}...`;;
         fragConfig.dns.servers[0] = remoteDNS;
         fragConfig.dns.servers[1].address = localDNS;
-        fragConfig.outbounds[2].settings.fragment.length = `${lengthMin}-${lengthMax}`;
-        fragConfig.outbounds[2].settings.fragment.interval = `${intervalMin}-${intervalMax}`;
+        fragConfig.outbounds[0].settings.fragment.length = `${lengthMin}-${lengthMax}`;
+        fragConfig.outbounds[0].settings.fragment.interval = `${intervalMin}-${intervalMax}`;
         fragConfig.routing.rules[0].ip = [localDNS];
 
         if (proxyOutbound) {
@@ -1035,14 +1035,19 @@ const getFragmentConfigs = async (env, hostName, client) => {
         delete fragConfig.routing.balancers;
         fragConfig.routing.rules.pop();
 
+        if (localDNS === 'localhost' && bypassIran) {
+            fragConfig.dns.servers.pop();
+            fragConfig.routing.rules.splice(0,1);
+        }
+
         if (!bypassIran) {
-            fragConfig.dns.servers[1].domains = ["geosite:private"];
-            fragConfig.routing.rules[1].domain = ["geosite:private"];
-            fragConfig.routing.rules[2].ip = ["geoip:private"];
+            fragConfig.dns.servers.pop();
+            fragConfig.routing.rules.splice(0,2);
+            fragConfig.routing.rules[0].ip = ["geoip:private"];
         }
 
         if (!blockAds) {
-            fragConfig.dns.hosts = {"domain:googleapis.cn": "googleapis.com"};
+            delete fragConfig.dns.hosts;
             fragConfig.routing.rules.pop();
         }
 
@@ -1070,23 +1075,28 @@ const getFragmentConfigs = async (env, hostName, client) => {
 
 
     let bestPing = structuredClone(xrayConfigTemp);
-    bestPing.remarks = '❄️ fragment - Best Ping ⚡';
+    bestPing.remarks = '❄️ Fragment, Best Ping';
     bestPing.dns.servers[0] = remoteDNS;
     bestPing.dns.servers[1].address = localDNS;
-    bestPing.outbounds[2].settings.fragment.length = `${lengthMin}-${lengthMax}`;
-    bestPing.outbounds[2].settings.fragment.interval = `${intervalMin}-${intervalMax}`;
+    bestPing.outbounds[0].settings.fragment.length = `${lengthMin}-${lengthMax}`;
+    bestPing.outbounds[0].settings.fragment.interval = `${intervalMin}-${intervalMax}`;
     bestPing.routing.rules[0].ip = [localDNS];
     bestPing.outbounds = [...outbounds, ...bestPing.outbounds];
     
-    if (!bypassIran) {
-        bestPing.dns.servers[1].domains = ["geosite:private"];
-        bestPing.routing.rules[1].domain = ["geosite:private"];
-        bestPing.routing.rules[2].ip = ["geoip:private"];
+    if (!blockAds) {
+        delete bestPing.dns.hosts;
+        bestPing.routing.rules.splice(3,1);
+    }
+
+    if (localDNS === 'localhost' && bypassIran) {
+        bestPing.dns.servers.pop();
+        bestPing.routing.rules.splice(0,1);
     }
     
-    if (!blockAds) {
-        bestPing.dns.hosts = {"domain:googleapis.cn": "googleapis.com"};
-        bestPing.routing.rules.splice(3,1);
+    if (!bypassIran) {
+        bestPing.dns.servers.pop();
+        bestPing.routing.rules.splice(0,2);
+        bestPing.routing.rules[0].ip = ["geoip:private"];
     }
     
     if (proxyOutbound) {
@@ -1099,21 +1109,27 @@ const getFragmentConfigs = async (env, hostName, client) => {
         bestPing.inbounds[1].port = 2081;
     }
 
-    Configs.push({
-        address: "Best-Ping",
-        config: bestPing,
-    });
+    const workerLessConfig = await buildWorkerLessConfig(env, client);
+    
+    Configs.push(
+        { address: 'Best-Ping', config: bestPing}, 
+        { address: 'WorkerLess', config: workerLessConfig}
+    );
 
     return Configs;
 }
 
 const getSingboxConfig = async (env, hostName) => {
-    const {
-        remoteDNS, 
-        localDNS,
-        cleanIPs
-    } = await env.bpb.get("proxySettings", {type: 'json'});
+    let proxySettings = {};
+    
+    try {
+        proxySettings = await env.bpb.get("proxySettings", {type: 'json'});
+    } catch (error) {
+        console.log(error);
+        throw new Error(`An error occurred while getting sing-box configs - ${error}`);
+    }
 
+    const { remoteDNS,  localDNS, cleanIPs } = proxySettings
     let config = structuredClone(singboxConfigTemp);
     config.dns.servers[0].address = remoteDNS;
     config.dns.servers[1].address = localDNS;
@@ -1131,7 +1147,7 @@ const getSingboxConfig = async (env, hostName) => {
         let outbound = structuredClone(singboxOutboundTemp);
         outbound.server = addr;
         outbound.tag = addr;
-	outbound.uuid = userID;
+        outbound.uuid = userID;
         outbound.tls.server_name = randomUpperCase(hostName);
         outbound.transport.headers.Host = randomUpperCase(hostName);
         outbound.transport.path += getRandomPath(16);
@@ -1163,7 +1179,8 @@ const updateDataset = async (env, Settings) => {
     try {    
         await env.bpb.put("proxySettings", JSON.stringify(proxySettings));          
     } catch (error) {
-        throw new error(error);
+        console.log(error);
+        throw new Error(`An error occurred while updating KV - ${error}`);
     }
 }
 
@@ -1208,6 +1225,7 @@ const resolveDNS = async (domain) => {
         return { ipv4, ipv6 };
     } catch (error) {
         console.error('Error resolving DNS:', error);
+        throw new Error(`An error occurred while resolving DNS - ${error}`);
     }
 }
 
@@ -1235,14 +1253,17 @@ const generateSecretKey = () => {
 }
   
 const Authenticate = async (request, env) => {
-    const secretKey = await env.bpb.get('secretKey');
-
+    
     try {
+        const secretKey = await env.bpb.get('secretKey');
         const cookie = request.headers.get('Cookie');
         const cookieMatch = cookie ? cookie.match(/(^|;\s*)jwtToken=([^;]*)/) : null;
         const token = cookieMatch ? cookieMatch.pop() : null;
 
-        if (!token) return false;
+        if (!token) {
+            console.log('token');
+            return false;
+        }
 
         const tokenWithoutBearer = token.startsWith('Bearer ') ? token.slice(7) : token;
         const [encodedHeader, encodedPayload, signature] = tokenWithoutBearer.split('.');
@@ -1260,11 +1281,21 @@ const Authenticate = async (request, env) => {
 
         return true;
     } catch (error) {
-        return false;
+        console.log(error);
+        throw new Error(`An error occurred while authentication - ${error}`);
     }
 }
 
 const renderHomePage = async (env, hostName, fragConfigs) => {
+    let proxySettings = {};
+    
+    try {
+        proxySettings = await env.bpb.get("proxySettings", {type: 'json'});
+    } catch (error) {
+        console.log(error);
+        throw new Error(`An error occurred while rendering home page - ${error}`);
+    }
+
     const {
         remoteDNS, 
         localDNS, 
@@ -1276,7 +1307,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
         bypassIran,
         cleanIPs,
         outProxy
-    } = await env.bpb.get("proxySettings", {type: 'json'});
+    } = proxySettings;
 
     const genCustomConfRow = async (configs) => {
         let tableBlock = "";
@@ -1285,8 +1316,10 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
             <tr>
                 <td>
                     ${config.address === 'Best-Ping' 
-                        ? `<div  style="display: flex; align-items: center; justify-content: center;"><span class="material-symbols-outlined">speed</span><span>&nbsp;<b>${config.address}</b></span></div>` 
-                        : config.address
+                        ? `<div  style="justify-content: center;"><span class="material-symbols-outlined">speed</span><span>&nbsp;<b>Best-Ping</b></span></div>` 
+                        : config.address === 'WorkerLess'
+                            ? `<div  style="justify-content: center;"><span class="material-symbols-outlined">star</span><span>&nbsp;<b>WorkerLess</b></span></div>`
+                            : config.address
                     }
                 </td>
                 <td>
@@ -1308,6 +1341,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>BPB Panel ${panelVersion}</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 		<style>
@@ -1320,6 +1354,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                 'GRAD' 0,
                 'opsz' 24
             }
+            h1 { font-size: 2.5em; text-align: center; color: #09639f; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25); }
 			h2 { margin: 30px 0; text-align: center; color: #3b3b3b; }
 			hr { border: 1px solid #ddd; margin: 20px 0; }
             .footer {
@@ -1416,10 +1451,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 			}
             button.button:hover { color: white; }
 			.button:active,
-			table button:active {
-				transform: translateY(1px);
-				box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-			}
+			table button:active { transform: translateY(1px); box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3); }
 			.form-container {
 				max-width: 90%;
 				margin: 0 auto;
@@ -1432,6 +1464,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 			.table-container { margin-top: 20px; overflow-x: auto; }
 			table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
 			th, td { padding: 8px 15px; border-bottom: 1px solid #ddd; }
+            td div { display: flex; align-items: center; }
 			th { background-color: #3498db; color: white; font-weight: bold; font-size: 1.1rem; width: 50%;}
 			tr:nth-child(odd) { background-color: #f2f2f2; }
             #custom-configs-table td { text-align: center; }
@@ -1450,7 +1483,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
             .modal-content {
                 background-color: #f9f9f9;
                 margin: auto;
-                padding: 20px;
+                padding: 10px 20px 20px;
                 border: 1px solid #eaeaea;
                 border-radius: 10px;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -1460,18 +1493,9 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                 left: 50%;
                 transform: translate(-50%, -50%);
             }
-            .close {
-                color: #aaa;
-                float: right;
-                font-size: 28px;
-                font-weight: bold;
-            }
+            .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
             .close:hover,
-            .close:focus {
-                color: black;
-                text-decoration: none;
-                cursor: pointer;
-            }
+            .close:focus { color: black; text-decoration: none; cursor: pointer; }
             .form-control label {
                 display: block;
                 margin-bottom: 5px;
@@ -1493,13 +1517,19 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
             }
             .routing { display: flex; justify-content: center; align-items: center; margin-bottom: 15px; }
             .routing label { margin: 0; font-weight: 400; font-size: 100%; }
-            .form-control input[type="password"]:focus {
-                border-color: #3498db;
-                outline: none;
-            }
-            #passwordError {
-                color: red;
-                margin-bottom: 10px;
+            .form-control input[type="password"]:focus { border-color: #3498db; outline: none; }
+            #passwordError { color: red; margin-bottom: 10px; }
+            .symbol { margin-right: 8px; }
+            .modalQR {
+                display: none;
+                position: fixed;
+                z-index: 1;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(0, 0, 0, 0.4);
             }
             @media only screen and (min-width: 768px) {
                 .form-container { max-width: 70%; }
@@ -1510,7 +1540,9 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 	</head>
 	
 	<body>
-		<h1 style="text-align: center; color: #2980b9">🎃 BPB Panel <span style="font-size: smaller;">v${panelVersion}</span> </h1>
+		<h1> 🚬🗿 BPB Panel <span style="font-size: smaller;">${panelVersion}</span> </h3>
+            <hr>            
+			<h2>${REvil} </h2>
 		<div class="form-container">
             <h2>FRAGMENT SETTINGS ⚙️</h2>
 			<form id="configForm">
@@ -1521,8 +1553,8 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 				<div class="form-control">
 					<label for="localDNS">🏚️ Local DNS</label>
 					<input type="text" id="localDNS" name="localDNS" value="${localDNS}"
-						pattern="^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-						title="Please enter a valid DNS IP Address!"  required>
+						pattern="^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)|localhost$"
+						title="Please enter a valid DNS IP Address or localhost!"  required>
 				</div>	
 				<div class="form-control">
 					<label for="fragmentLengthMin">📐 Length</label>
@@ -1536,10 +1568,10 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 					<label for="fragmentIntervalMin">🕞 Interval</label>
 					<div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline;">
 						<input type="number" id="fragmentIntervalMin" name="fragmentIntervalMin"
-						value="${intervalMin}" max="30" required>
+    						value="${intervalMin}" max="30" required>
 						<span style="text-align: center; white-space: pre;"> - </span>
 						<input type="number" id="fragmentIntervalMax" name="fragmentIntervalMax"
-						value="${intervalMax}" max="30" required>
+    						value="${intervalMax}" max="30" required>
 					</div>
 				</div>
 				<div class="form-control">
@@ -1559,7 +1591,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 				</div>
                 <h2>CLEAN IP ⚙️</h2>
 				<div class="form-control">
-					<label for="cleanIPs">💫 Clean IPs</label>
+					<label for="cleanIPs"> Clean IPs</label>
 					<input type="text" id="cleanIPs" name="cleanIPs" value="${cleanIPs.replaceAll(",", " , ")}">
 				</div>
                 <div class="form-control">
@@ -1577,9 +1609,8 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 					</div>
 				</div>
 			</form>
-            <hr>
-            
-			<h2>NORMAL CONFIGS ☔</h2>
+            <hr>            
+			<h2>NORMAL CONFIGS ☔ </h2>
 			<div class="table-container">
 				<table id="normal-configs-table">
 					<tr>
@@ -1588,67 +1619,70 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 					</tr>
 					<tr>
                         <td>
-                            <div style="display: flex; align-items: center;">
-                                <span class="material-symbols-outlined" style="margin-right: 8px;">verified</span>
+                            <div>
+                                <span class="material-symbols-outlined symbol">verified</span>
                                 <span>v2rayNG</span>
                             </div>
-                            <div style="display: flex; align-items: center;">
-                                <span class="material-symbols-outlined" style="margin-right: 8px;">verified</span>
+                            <div>
+                                <span class="material-symbols-outlined symbol">verified</span>
                                 <span>v2rayN</span>
                             </div>
-                            <div style="display: flex; align-items: center;">
-                                <span class="material-symbols-outlined" style="margin-right: 8px;">verified</span>
+                            <div>
+                                <span class="material-symbols-outlined symbol">verified</span>
                                 <span>Shadowrocket</span>
                             </div>
-                            <div style="display: flex; align-items: center;">
-                                <span class="material-symbols-outlined" style="margin-right: 8px;">verified</span>
+                            <div>
+                                <span class="material-symbols-outlined symbol">verified</span>
                                 <span>Streisand</span>
                             </div>
-                            <div style="display: flex; align-items: center;">
-                                <span class="material-symbols-outlined" style="margin-right: 8px;">verified</span>
+                            <div>
+                                <span class="material-symbols-outlined symbol">verified</span>
+                                <span>Hiddify</span>
+                            </div>
+                            <div>
+                                <span class="material-symbols-outlined symbol">verified</span>
                                 <span>Nekoray (Xray)</span>
                             </div>
                         </td>
 						<td>
-                            <button onclick="copyToClipboard('https://${hostName}/sub/${userID}#BPB%20Normal', false)">
-                                Copy Sub
-                                <span class="material-symbols-outlined">format_list_bulleted</span>
+                            <button onclick="openQR('https://${hostName}/sub/${userID}#BPB-Normal', 'Normal Subscription')" style="margin-bottom: 8px;">
+                                QR Code&nbsp;<span class="material-symbols-outlined">qr_code</span>
+                            </button>
+                            <button onclick="copyToClipboard('https://${hostName}/sub/${userID}#BPB-Normal', false)">
+                                Copy Sub<span class="material-symbols-outlined">format_list_bulleted</span>
                             </button>
                         </td>
 					</tr>
 					<tr>
                         <td>
-                            <div style="display: flex; align-items: center;">
-                                <span class="material-symbols-outlined" style="margin-right: 8px;">verified</span>
+                            <div>
+                                <span class="material-symbols-outlined symbol">verified</span>
                                 <span>Nekobox</span>
                             </div>
-                            <div style="display: flex; align-items: center;">
-                                <span class="material-symbols-outlined" style="margin-right: 8px;">verified</span>
-                                <span>Hiddify Next</span>
-                            </div>
-                            <div style="display: flex; align-items: center;">
-                                <span class="material-symbols-outlined" style="margin-right: 8px;">verified</span>
+                            <div>
+                                <span class="material-symbols-outlined symbol">verified</span>
                                 <span>Nekoray (Sing-Box)</span>
                             </div>
                         </td>
 						<td>
                             <button onclick="copyToClipboard('https://${hostName}/sub/${userID}?app=singbox#BPB-Normal', false)">
-                                Copy Sub
-                                <span class="material-symbols-outlined">format_list_bulleted</span>
+                                Copy Sub<span class="material-symbols-outlined">format_list_bulleted</span>
                             </button>
 						</td>
 					</tr>
                     <tr>
                         <td>
-                            <div style="display: flex; align-items: center;">
-                                <span class="material-symbols-outlined" style="margin-right: 8px;">verified</span>
+                            <div>
+                                <span class="material-symbols-outlined symbol">verified</span>
                                 <span>Sing-box - <b>Best Ping</b></span>
                             </div>
                         </td>
                         <td>
+                            <button onclick="openQR('sing-box://import-remote-profile?url=https://${hostName}/sub/${userID}?app=sfa#BPB-Normal', 'Normal Subscription')" style="margin-bottom: 8px;">
+                                QR Code&nbsp;<span class="material-symbols-outlined">qr_code</span>
+                            </button>
                             <button onclick="copyToClipboard('https://${hostName}/sub/${userID}?app=sfa#BPB-Normal', false)">
-                                Copy Sub
-                                <span class="material-symbols-outlined">format_list_bulleted</span>
+                                Copy Sub<span class="material-symbols-outlined">format_list_bulleted</span>
                             </button>
                         </td>
                     </tr>
@@ -1664,54 +1698,65 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                     </tr>
                     <tr>
                         <td style="text-wrap: nowrap;">
-                            <div style="display: flex; align-items: center;">
-                                <span class="material-symbols-outlined" style="margin-right: 8px;">verified</span>
+                            <div>
+                                <span class="material-symbols-outlined symbol">verified</span>
                                 <span>v2rayNG</span>
                             </div>
-                            <div style="display: flex; align-items: center;">
-                                <span class="material-symbols-outlined" style="margin-right: 8px;">verified</span>
+                            <div>
+                                <span class="material-symbols-outlined symbol">verified</span>
                                 <span>v2rayN</span>
                             </div>
-                            <div style="display: flex; align-items: center;">
-                                <span class="material-symbols-outlined" style="margin-right: 8px;">verified</span>
+                            <div>
+                                <span class="material-symbols-outlined symbol">verified</span>
                                 <span>Streisand</span>
                             </div>
                         </td>
                         <td>
+                            <button onclick="openQR('https://${hostName}/fragsub/${userID}#BPB Fragment', 'Fragment Subscription')" style="margin-bottom: 8px;">
+                                QR Code&nbsp;<span class="material-symbols-outlined">qr_code</span>
+                            </button>
                             <button onclick="copyToClipboard('https://${hostName}/fragsub/${userID}#BPB Fragment', true)">
-                                Copy Sub
-                                <span class="material-symbols-outlined">format_list_bulleted</span>
+                                Copy Sub<span class="material-symbols-outlined">format_list_bulleted</span>
                             </button>
                         </td>
                     </tr>
                 </table>
             </div>
-            <h2>FRAGMENT CONFIG ⛓️</h2>
+            <h2>FRAGMENT - NEKORAY ⛓️</h2>
             <div class="table-container">
 				<table id="custom-configs-table">
 					<tr style="text-wrap: nowrap;">
 						<th>Config Address</th>
-						<th>Nekoray Config</th>
+						<th>Fragment Config</th>
 					</tr>					
 					${await genCustomConfRow(fragConfigs)}
 				</table>
 			</div>
             <div id="myModal" class="modal">
                 <div class="modal-content">
-                <span class="close">&times;</span>
-                <form id="passwordChangeForm">
-                    <h2>Change Password</h2>
-                    <div class="form-control">
-                        <label for="newPassword">New Password</label>
-                        <input type="password" id="newPassword" name="newPassword" required>
+                    <span class="close">&times;</span>
+                    <form id="passwordChangeForm">
+                        <h2>Change Password</h2>
+                        <div class="form-control">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" name="newPassword" required>
+                            </div>
+                        <div class="form-control">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required>
                         </div>
-                    <div class="form-control">
-                        <label for="confirmPassword">Confirm Password</label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        <div id="passwordError" style="color: red; margin-bottom: 10px;"></div>
+                        <button id="changePasswordBtn" type="submit" class="button">Change Password</button>
+                    </form>
+                </div>
+            </div>
+            <div id="myQRModal" class="modalQR">
+                <div class="modal-content" style="width: auto; text-align: center;">
+                    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 10px;">
+                        <span id="closeQRModal" class="close" style="align-self: flex-end;">&times;</span>
+                        <span id="qrcodeTitle" style="align-self: center; font-weight: bold;"></span>
                     </div>
-                    <div id="passwordError" style="color: red; margin-bottom: 10px;"></div>
-                    <button id="changePasswordBtn" type="submit" class="button">Change Password</button>
-                </form>
+                    <div id="qrcode-container"></div>
                 </div>
             </div>
             <div class="footer">
@@ -1723,7 +1768,8 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                 </button>
             </div>
         </div>
-
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 	<script>
 		document.addEventListener('DOMContentLoaded', () => {
             const configForm = document.getElementById('configForm');            
@@ -1733,6 +1779,9 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
             const passwordChangeForm = document.getElementById('passwordChangeForm');            
             const applyBtn = document.getElementById('applyButton');         
             const initialFormData = new FormData(configForm);
+            const closeQR = document.getElementById("closeQRModal");
+            let modalQR = document.getElementById("myQRModal");
+            let qrcodeContainer = document.getElementById("qrcode-container");
           
             const hasFormDataChanged = () => {
                 const currentFormData = new FormData(configForm);
@@ -1774,8 +1823,37 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                 modal.style.display = "none";
                 document.body.style.overflow = "";
             });
-
+            closeQR.addEventListener('click', () => {
+                modalQR.style.display = "none";
+                qrcodeContainer.lastElementChild.remove();
+            });
+            window.onclick = (event) => {
+                if (event.target == modalQR) {
+                    modalQR.style.display = "none";
+                    qrcodeContainer.lastElementChild.remove();
+                }
+            }
 		});
+
+        const openQR = (url, title) => {
+            let qrcodeContainer = document.getElementById("qrcode-container");
+            let qrcodeTitle = document.getElementById("qrcodeTitle");
+            const modalQR = document.getElementById("myQRModal");
+
+            qrcodeTitle.textContent = title;
+            modalQR.style.display = "block";
+            let qrcodeDiv = document.createElement("div");
+            qrcodeDiv.className = "qrcode";
+            new QRCode(qrcodeDiv, {
+                text: url,
+                width: 256,
+                height: 256,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            qrcodeContainer.appendChild(qrcodeDiv);
+        }
 
 		const copyToClipboard = (text, decode) => {
             const textarea = document.createElement('textarea');
@@ -1818,8 +1896,8 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                 return false;
             }
 
-            if (lengthMin >= lengthMax || intervalMin >= intervalMax) {
-                alert('⛔ Minimum should be smaller than Maximum! 🫤');               
+            if (lengthMin >= lengthMax || intervalMin > intervalMax) {
+                alert('⛔ Minimum should be smaller or equal to Maximum! 🫤');               
                 return false;
             }
 
@@ -1843,7 +1921,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                 applyButton.value = applyButtonVal;
 
                 if (response.ok) {
-                    alert('Parameters applied successfully 😎');
+                    alert('Parameters applied successfully ✋😁 ');
                     window.location.reload(true);
                 } else {
                     const errorMessage = await response.text();
@@ -1911,7 +1989,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                 if (response.ok) {
                     modal.style.display = "none";
                     document.body.style.overflow = "";
-                    alert("Password changed successfully! 👍");
+                    alert("Password changed successfully! ✋");
                     window.location.href = '/login';
                 } else if (response.status === 401) {
                     const errorMessage = await response.text();
@@ -1959,13 +2037,8 @@ const renderLoginPage = async () => {
             left: 50%;
             transform: translate(-50%, -50%);
             width: 90%;
-        }        
-        h1 {
-            text-align: center;
-            color: #2980b9;
-            margin-bottom: 30px;
-            margin-top: 0px;
         }
+        h1 { font-size: 2.5rem; text-align: center; color: #09639f; margin: 0 auto 30px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25); }        
         h2 {text-align: center;}
         .form-container {
             background: #f9f9f9;
@@ -2012,7 +2085,7 @@ const renderLoginPage = async () => {
     </head>
     <body>
         <div class="container">
-            <h1>🎱 BPB Panel <span style="font-size: smaller;">${panelVersion}</span>  </h1>
+            <h2>🔰 BPB Panel v2.3.4 🔰<span style="font-size: smaller;"></span></h2>
             <div class="form-container">
                 <h2>User Login</h2>
                 <form id="loginForm">
@@ -2057,20 +2130,59 @@ const renderLoginPage = async () => {
     return html;
 }
 
+const renderErrorPage = (message, error, refer) => {
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Error Page</title>
+        <style>
+            body,
+            html {
+                height: 100%;
+                margin: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-family: system-ui;
+            }
+            h1 { font-size: 2.5rem; text-align: center; color: #09639f; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25); }
+            #error-container { text-align: center; }
+        </style>
+    </head>
+
+    <body>
+        <div id="error-container">
+            <h1>✋😁🚬 <span style="font-size: smaller;"> </span> KV is fuckin Dead 😭 </h2>
+            <div id="error-message">
+                <h2>${message} ${refer 
+                    ? 'Please try again or refer to <a href="https://github.com/bia-pain-bache/BPB-Worker-Panel/blob/main/README.md">documents</a>' 
+                    : ''}
+                </h2>
+                <p><b>${error ? `⚠️ ${error}` : ''}</b></p>
+            </div>
+        </div>
+    </body>
+
+    </html>`;
+}
+
 const xrayConfigTemp = {
     remarks: "",
     dns: {
         hosts: {
             "geosite:category-ads-all": "127.0.0.1",
-            "geosite:category-ads-ir": "127.0.0.1",
-            "domain:googleapis.cn": "googleapis.com"
+            "geosite:category-ads-ir": "127.0.0.1"
         },
         servers: [
             "",
             {
                 address: "",
-                domains: ["geosite:private", "geosite:category-ir", "domain:.ir"],
-                expectIPs: ["geoip:cn"],
+                domains: ["geosite:category-ir", "domain:.ir"],
+                expectIPs: ["geoip:ir"],
                 port: 53
             },
         ],
@@ -2106,6 +2218,23 @@ const xrayConfigTemp = {
     },
     outbounds: [
         {
+            tag: "fragment",
+            protocol: "freedom",
+            settings: {
+                fragment: {
+                    packets: "tlshello",
+                    length: "",
+                    interval: "",
+                },
+            },
+            streamSettings: {
+                sockopt: {
+                    tcpKeepAliveIdle: 100,
+                    tcpNoDelay: true
+                },
+            },
+        },
+        {
             protocol: "freedom",
             settings: {
                 domainStrategy: "UseIP",
@@ -2120,22 +2249,6 @@ const xrayConfigTemp = {
                 },
             },
             tag: "block",
-        },
-        {
-            tag: "fragment",
-            protocol: "freedom",
-            settings: {
-                fragment: {
-                    packets: "tlshello",
-                    length: "",
-                    interval: "",
-                },
-            },
-            streamSettings: {
-                sockopt: {
-                    tcpKeepAliveIdle: 100
-                },
-            },
         }
     ],
     policy: {
@@ -2162,7 +2275,7 @@ const xrayConfigTemp = {
                 type: "field",
             },
             {
-                domain: ["geosite:private", "geosite:category-ir", "domain:.ir"],
+                domain: ["geosite:category-ir", "domain:.ir"],
                 outboundTag: "direct",
                 type: "field",
             },
@@ -2232,7 +2345,8 @@ const xrayOutboundTemp =
         security: "tls",
         sockopt: {
             dialerProxy: "fragment",
-            tcpKeepAliveIdle: 100
+            tcpKeepAliveIdle: 100,
+            tcpNoDelay: true
         },
         tlsSettings: {
             allowInsecure: false,
@@ -2342,7 +2456,7 @@ const singboxConfigTemp = {
             endpoint_independent_nat: true,
             stack: "mixed",
             sniff: true,
-            sniff_override_destination: false
+            sniff_override_destination: true
         },
         {
             type: "mixed",
@@ -2350,7 +2464,7 @@ const singboxConfigTemp = {
             listen: "127.0.0.1",
             listen_port: 2080,
             sniff: true,
-            sniff_override_destination: false
+            sniff_override_destination: true
         }
     ],
     outbounds: [
@@ -2525,43 +2639,3 @@ const singboxOutboundTemp = {
     },
     tag: ""
 };
-
-const errorPage = `
-    <!DOCTYPE html>
-    <html lang="en">
-
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Error Page</title>
-        <style>
-            body,
-            html {
-                height: 100%;
-                margin: 0;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-family: system-ui;
-            }
-            h1 {
-                text-align: center;
-                color: #2980b9;
-                font-size: 2.5rem;
-            }
-            #error-container {
-                text-align: center;
-            }
-        </style>
-    </head>
-
-    <body>
-        <div id="error-container">
-            <h1>BPB <span style="font-size: smaller;">${panelVersion}</span> 🎃</h1>
-            <div id="error-message">
-                <h2>KV Dataset is not properly set! Please refer to <a href="https://github.com/bia-pain-bache/BPB-Worker-Panel/blob/main/README.md">documents</a></h2>
-            </div>
-        </div>
-    </body>
-
-    </html>`;
