@@ -2206,7 +2206,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 					<label for="outProxy"><span class="material-symbols-outlined">connecting_airports</span> Chain Proxy</label>
 					<input type="text" id="outProxy" name="outProxy" value="${outProxy}">
 				</div>
-                <h2>FRAG/WARP ROUTING ⚙️</h2>
+                <h2>FRAG/WARP ROUTING <span class="material-symbols-outlined">manufacturing</span></h2>
 				<div class="form-control" style="margin-bottom: 20px;">			
                     <div class="routing">
                         <input type="checkbox" id="block-ads" name="block-ads" style="margin: 0; grid-column: 2;" value="true" ${blockAds ? 'checked' : ''}>
@@ -2225,18 +2225,18 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                         <label for="bypass-lan">Bypass LAN</label>
 					</div>
 				</div>
-                <h2>PROXY IP ⚙️</h2>
+                <h2>PROXY IP <span class="material-symbols-outlined">data_object</span></h2>
 				<div class="form-control">
-					<label for="proxyIP">📍 IP or Domain</label>
+					<label for="proxyIP"><span class="material-symbols-outlined">bring_your_own_ip</span> IP or Domain</label>
 					<input type="text" id="proxyIP" name="proxyIP" value="${proxyIP}">
 				</div>
-                <h2>CLEAN IP ⚙️</h2>
+                <h2>CLEAN IP <span class="material-symbols-outlined">data_object</span></h2>
 				<div class="form-control">
-					<label for="cleanIPs">✨ Clean IPs</label>
+					<label for="cleanIPs"><span class="material-symbols-outlined">rocket</span> Clean IPs</label>
 					<input type="text" id="cleanIPs" name="cleanIPs" value="${cleanIPs.replaceAll(",", " , ")}">
 				</div>
                 <div class="form-control">
-                    <label>🔎 Online Scanner</label>
+                    <label><span class="material-symbols-outlined">search_insights</span>Online Scanner</label>
                     <a href="https://scanner.github1.cloud/" id="scanner" name="scanner" target="_blank">
                         <button type="button" class="button">
                             Scan now
@@ -2244,7 +2244,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                         </button>
                     </a>
                 </div>
-                <h2>PORTS ⚙️</h2>
+                <h2>PORTS <span class="material-symbols-outlined">data_object</span></h2>
                 <div class="table-container">
                     <table id="frag-sub-table">
                         <tr>
@@ -2261,34 +2261,34 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                         </tr>`}        
                     </table>
                 </div>
-                <h2>WARP SETTINGS ⚙️</h2>
+                <h2>WARP SETTINGS <span class="material-symbols-outlined">manufacturing</span></h2>
 				<div class="form-control">
-                    <label for="wowEndpoint">✨ WoW Endpoints</label>
+                    <label for="wowEndpoint"><span class="material-symbols-outlined">airline_stops</span> WoW Endpoints</label>
                     <input type="text" id="wowEndpoint" name="wowEndpoint" value="${wowEndpoint.replaceAll(",", " , ")}" required>
 				</div>
 				<div class="form-control">
-                    <label for="warpEndpoints">✨ Warp Endpoints</label>
+                    <label for="warpEndpoints"><span class="material-symbols-outlined">straight</span> Warp Endpoints</label>
                     <input type="text" id="warpEndpoints" name="warpEndpoints" value="${warpEndpoints.replaceAll(",", " , ")}" required>
 				</div>
 				<div class="form-control">
-                    <label for="warpPlusLicense">➕ Warp+ License</label>
+                    <label for="warpPlusLicense"><span class="material-symbols-outlined">license</span> WARP+ License</label>
                     <input type="text" id="warpPlusLicense" name="warpPlusLicense" value="${warpPlusLicense}" 
                         pattern="^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{8}-[a-zA-Z0-9]{8}$" 
                         title="Please enter a valid Warp Plus license in xxxxxxxx-xxxxxxxx-xxxxxxxx format">
 				</div>
                 <div class="form-control">
-                    <label>♻️ Warp Configs</label>
+                    <label><span class="material-symbols-outlined">straight</span> Warp Configs</label>
                     <button id="refreshBtn" type="button" class="button" style="padding: 10px 0;" onclick="getWarpConfigs()">
                         Update<span class="material-symbols-outlined">autorenew</span>
                     </button>
                 </div>
                 <div class="form-control">
-                    <label>🔎 Endpoint Scanner</label>
+                    <label><span class="material-symbols-outlined">roundabout_right</span> Endpoit Scanner</label>
                     <button type="button" class="button" style="padding: 10px 0;" onclick="copyToClipboard('bash <(curl -fsSL https://raw.githubusercontent.com/Ptechgithub/warp/main/endip/install.sh)', false)">
                         Copy Script<span class="material-symbols-outlined">terminal</span>
                     </button>
                 </div>
-                <h2>WARP PRO SETTINGS ⚙️</h2>
+                <h2>WARP PRO SETTINGS <span class="material-symbols-outlined">manufacturing</span></h2>
                 <div class="form-control">
 					<label for="hiddifyNoiseMode">😵‍💫 Hiddify Mode</label>
 					<input type="text" id="hiddifyNoiseMode" name="hiddifyNoiseMode" 
