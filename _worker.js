@@ -2181,7 +2181,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 					</div>
 				</div>
 				<div class="form-control">
-					<label for="fragmentIntervalMin"><span class="material-symbols-outlined">alarm</span> Interval</label>
+					<label for="fragmentIntervalMin"><span class="material-symbols-outlined">snooze</span> Interval</label>
 					<div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline;">
 						<input type="number" id="fragmentIntervalMin" name="fragmentIntervalMin"
     						value="${intervalMin}" max="30" required>
@@ -2191,7 +2191,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 					</div>
 				</div>
                 <div class="form-control">
-                    <label for="fragmentPackets"><span class="material-symbols-outlined">deployed_code</span> Fragment Packets</label>
+                    <label for="fragmentPackets"><span class="material-symbols-outlined">deployed_code</span> Fragment packets</label>
                     <div class="input-with-select">
                         <select id="fragmentPackets" name="fragmentPackets">
                             <option value="tlshello" ${fragmentPackets === 'tlshello' ? 'selected' : ''}>tlshello</option>
@@ -2203,7 +2203,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                     </div>
                 </div>
 				<div class="form-control">
-					<label for="outProxy"><span class="material-symbols-outlined">connecting_airports</span> Chain Proxy</label>
+					<label for="outProxy"><span class="material-symbols-outlined">connecting_airports</span> Chain proxy</label>
 					<input type="text" id="outProxy" name="outProxy" value="${outProxy}">
 				</div>
                 <h2>FRAG/WARP ROUTING <span class="material-symbols-outlined">manufacturing</span></h2>
@@ -2227,7 +2227,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 				</div>
                 <h2>PROXY IP <span class="material-symbols-outlined">data_object</span></h2>
 				<div class="form-control">
-					<label for="proxyIP"><span class="material-symbols-outlined">bring_your_own_ip</span> IP or Domain</label>
+					<label for="proxyIP"><span class="material-symbols-outlined">fingerprint</span> IP or Domain</label>
 					<input type="text" id="proxyIP" name="proxyIP" value="${proxyIP}">
 				</div>
                 <h2>CLEAN IP <span class="material-symbols-outlined">data_object</span></h2>
@@ -2236,7 +2236,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 					<input type="text" id="cleanIPs" name="cleanIPs" value="${cleanIPs.replaceAll(",", " , ")}">
 				</div>
                 <div class="form-control">
-                    <label><span class="material-symbols-outlined">search_insights</span>Online Scanner</label>
+                    <label><span class="material-symbols-outlined">search_insights</span> Online scanner</label>
                     <a href="https://scanner.github1.cloud/" id="scanner" name="scanner" target="_blank">
                         <button type="button" class="button">
                             Scan now
@@ -2263,48 +2263,48 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                 </div>
                 <h2>WARP SETTINGS <span class="material-symbols-outlined">manufacturing</span></h2>
 				<div class="form-control">
-                    <label for="wowEndpoint"><span class="material-symbols-outlined">airline_stops</span> WoW Endpoints</label>
+                    <label for="wowEndpoint"><span class="material-symbols-outlined">airline_stops</span> WoW endpoints</label>
                     <input type="text" id="wowEndpoint" name="wowEndpoint" value="${wowEndpoint.replaceAll(",", " , ")}" required>
 				</div>
 				<div class="form-control">
-                    <label for="warpEndpoints"><span class="material-symbols-outlined">straight</span> Warp Endpoints</label>
+                    <label for="warpEndpoints"><span class="material-symbols-outlined">roundabout_right</span> Warp endpoints</label>
                     <input type="text" id="warpEndpoints" name="warpEndpoints" value="${warpEndpoints.replaceAll(",", " , ")}" required>
 				</div>
 				<div class="form-control">
-                    <label for="warpPlusLicense"><span class="material-symbols-outlined">license</span> WARP+ License</label>
+                    <label for="warpPlusLicense"><span class="material-symbols-outlined">key_vertical</span> Warp license key</label>
                     <input type="text" id="warpPlusLicense" name="warpPlusLicense" value="${warpPlusLicense}" 
                         pattern="^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{8}-[a-zA-Z0-9]{8}$" 
                         title="Please enter a valid Warp Plus license in xxxxxxxx-xxxxxxxx-xxxxxxxx format">
 				</div>
                 <div class="form-control">
-                    <label><span class="material-symbols-outlined">straight</span> Warp Configs</label>
+                    <label><span class="material-symbols-outlined">stat_3</span> Warp configs</label>
                     <button id="refreshBtn" type="button" class="button" style="padding: 10px 0;" onclick="getWarpConfigs()">
                         Update<span class="material-symbols-outlined">autorenew</span>
                     </button>
                 </div>
                 <div class="form-control">
-                    <label><span class="material-symbols-outlined">roundabout_right</span> Endpoit Scanner</label>
+                    <label><span class="material-symbols-outlined">mystery</span> Endpoit scanner</label>
                     <button type="button" class="button" style="padding: 10px 0;" onclick="copyToClipboard('bash <(curl -fsSL https://raw.githubusercontent.com/Ptechgithub/warp/main/endip/install.sh)', false)">
                         Copy Script<span class="material-symbols-outlined">terminal</span>
                     </button>
                 </div>
                 <h2>WARP PRO SETTINGS <span class="material-symbols-outlined">manufacturing</span></h2>
                 <div class="form-control">
-					<label for="hiddifyNoiseMode">😵‍💫 Hiddify Mode</label>
+					<label for="hiddifyNoiseMode"><span class="material-symbols-outlined">award_star</span> Hiddify mode</label>
 					<input type="text" id="hiddifyNoiseMode" name="hiddifyNoiseMode" 
                         pattern="^(m[1-6]|h_[0-9A-Fa-f]{2}|g_([0-9A-Fa-f]{2}_){2}[0-9A-Fa-f]{2})$" 
                         title="Enter 'm1-m6', 'h_HEX', 'g_HEX_HEX_HEX' which HEX can be between 00 to ff"
                         value="${hiddifyNoiseMode}" required>
 				</div>
                 <div class="form-control">
-					<label for="nikaNGNoiseMode">😵‍💫 NikaNG Mode</label>
+					<label for="nikaNGNoiseMode"><span class="material-symbols-outlined">heart_check</span> NikaNG mode</label>
 					<input type="text" id="nikaNGNoiseMode" name="nikaNGNoiseMode" 
                         pattern="^(none|quic|random|[0-9A-Fa-f]+)$" 
                         title="Enter 'none', 'quic', 'random', or any HEX string like 'ee0000000108aaaa'"
                         value="${nikaNGNoiseMode}" required>
 				</div>
                 <div class="form-control">
-					<label for="noiseCountMin">🎚️ Noise Count</label>
+					<label for="noiseCountMin"><span class="material-symbols-outlined">airline_stops</span> Noise count</label>
 					<div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline;">
 						<input type="number" id="noiseCountMin" name="noiseCountMin"
     						value="${noiseCountMin}" required>
@@ -2314,7 +2314,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 					</div>
 				</div>
                 <div class="form-control">
-					<label for="noiseSizeMin">📏 Noise Size</label>
+					<label for="noiseSizeMin"><span class="material-symbols-outlined">square_foot</span> Noise size</label>
 					<div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline;">
 						<input type="number" id="noiseSizeMin" name="noiseSizeMin"
     						value="${noiseSizeMin}" required>
@@ -2324,7 +2324,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 					</div>
 				</div>
                 <div class="form-control">
-					<label for="noiseDelayMin">🕞 Noise Delay</label>
+					<label for="noiseDelayMin"><span class="material-symbols-outlined">snooze</span> Noise delay</label>
 					<div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline;">
 						<input type="number" id="noiseDelayMin" name="noiseDelayMin"
     						value="${noiseDelayMin}" required>
@@ -2335,7 +2335,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 				</div>
 				<div id="apply" class="form-control">
 					<div style="grid-column: 2; width: 100%;">
-						<input type="submit" id="applyButton" class="button disabled" value="APPLY SETTINGS 💥" form="configForm">
+						<input type="submit" id="applyButton" class="button disabled" value=" APPLY SETTINGS " form="configForm">
 					</div>
 				</div>
 			</form>
