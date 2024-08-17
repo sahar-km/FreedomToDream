@@ -2160,10 +2160,10 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 	<body>
 		<h1>BpB Panel <span style="font-size: smaller;">${panelVersion}</span> 👻</h2>
 		<div class="form-container">
-            <h2>FRAGMENT SETTINGS <span class="material-symbols-outlined">manufacturing</span> </h2>
+            <h2>FRAGMENT SETTINGS <span class="material-symbols-outlined">settings</span> </h2>
 			<form id="configForm">
 				<div class="form-control">
-					<label for="remoteDNS"><span class="material-symbols-outlined">dns</span> Remote DNS</label>
+					<label for="remoteDNS"><span class="material-symbols-outlined">dynamic_form</span> Remote DNS</label>
 					<input type="url" id="remoteDNS" name="remoteDNS" value="${remoteDNS}" required>
 				</div>
 				<div class="form-control">
@@ -2173,7 +2173,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 						title="Please enter a valid DNS IP Address or localhost!"  required>
 				</div>	
 				<div class="form-control">
-					<label for="fragmentLengthMin"><span class="material-symbols-outlined">square_foot</span> Length</label>
+					<label for="fragmentLengthMin"><span class="material-symbols-outlined">perm_data_setting</span> Length</label>
 					<div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline;">
 						<input type="number" id="fragmentLengthMin" name="fragmentLengthMin" value="${lengthMin}" min="10" required>
 						<span style="text-align: center; white-space: pre;"> - </span>
@@ -2206,7 +2206,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 					<label for="outProxy"><span class="material-symbols-outlined">connecting_airports</span> Chain proxy</label>
 					<input type="text" id="outProxy" name="outProxy" value="${outProxy}">
 				</div>
-                <h2>FRAG/WARP ROUTING <span class="material-symbols-outlined">manufacturing</span></h2>
+                <h2>FRAG/WARP ROUTING <span class="material-symbols-outlined">rule_settings</span></h2>
 				<div class="form-control" style="margin-bottom: 20px;">			
                     <div class="routing">
                         <input type="checkbox" id="block-ads" name="block-ads" style="margin: 0; grid-column: 2;" value="true" ${blockAds ? 'checked' : ''}>
@@ -2261,7 +2261,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                         </tr>`}        
                     </table>
                 </div>
-                <h2>WARP SETTINGS <span class="material-symbols-outlined">manufacturing</span></h2>
+                <h2>WARP SETTINGS <span class="material-symbols-outlined">settings</span></h2>
 				<div class="form-control">
                     <label for="wowEndpoint"><span class="material-symbols-outlined">airline_stops</span> WoW endpoints</label>
                     <input type="text" id="wowEndpoint" name="wowEndpoint" value="${wowEndpoint.replaceAll(",", " , ")}" required>
@@ -2288,7 +2288,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                         Copy Script<span class="material-symbols-outlined">terminal</span>
                     </button>
                 </div>
-                <h2>WARP PRO SETTINGS <span class="material-symbols-outlined">manufacturing</span></h2>
+                <h2>WARP PRO SETTINGS <span class="material-symbols-outlined">settings</span></h2>
                 <div class="form-control">
 					<label for="hiddifyNoiseMode"><span class="material-symbols-outlined">award_star</span> Hiddify mode</label>
 					<input type="text" id="hiddifyNoiseMode" name="hiddifyNoiseMode" 
