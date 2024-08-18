@@ -1461,12 +1461,12 @@ const buildWoWOutbounds = async (env, client, remoteDNS, localDNS, blockAds, byp
                 wnoisedelay: `${proxySettings.noiseDelayMin}-${proxySettings.noiseDelayMax}`
             };
 
-            xrayOutbound.tag = i === 1 ? `TEHRAN_${index + 1} 🟢` : `warp-out_${index + 1}`;   
+            xrayOutbound.tag = i === 1 ? `warp-ir_${index + 1}` : `warp-out_${index + 1}`;   
             
             if (i === 1) {
                 delete xrayOutbound.streamSettings;
             } else {
-                xrayOutbound.streamSettings.sockopt.dialerProxy = `TEHRAN_${index + 1} 🟢`;
+                xrayOutbound.streamSettings.sockopt.dialerProxy = `warp-ir_${index + 1}`;
             }
     
             xrayOutbounds.push(xrayOutbound);
@@ -1490,10 +1490,10 @@ const buildWoWOutbounds = async (env, client, remoteDNS, localDNS, blockAds, byp
                 fake_packets_delay: `${proxySettings.noiseDelayMin}-${proxySettings.noiseDelayMax}`
             };
 
-            singboxOutbound.tag = i === 1 ? `TEHRAN_${index + 1} 🟢` : `Berlin ${index + 1} 🟡`;     
+            singboxOutbound.tag = i === 1 ? `warp-ir_${index + 1}` : `Berlin ${index + 1} 🟡`;     
             
             if (i === 0) {
-                singboxOutbound.detour = `TEHRAN_${index + 1} 🟢`;
+                singboxOutbound.detour = `warp-ir_${index + 1}`;
             } else {
                 delete singboxOutbound.detour;
             }
@@ -1713,7 +1713,7 @@ const updateDataset = async (env, Settings) => {
         lengthMin: Settings ? Settings.get('fragmentLengthMin') : currentProxySettings?.lengthMin || '10',
         lengthMax: Settings ? Settings.get('fragmentLengthMax') : currentProxySettings?.lengthMax || '30',
         intervalMin: Settings ? Settings.get('fragmentIntervalMin') : currentProxySettings?.intervalMin || '1',
-        intervalMax: Settings ? Settings.get('fragmentIntervalMax') : currentProxySettings?.intervalMax || '3',
+        intervalMax: Settings ? Settings.get('fragmentIntervalMax') : currentProxySettings?.intervalMax || '2',
         fragmentPackets: Settings ? Settings.get('fragmentPackets') : currentProxySettings?.fragmentPackets || 'tlshello',
         blockAds: Settings ? Settings.get('block-ads') : currentProxySettings?.blockAds || false,
         bypassIran: Settings ? Settings.get('bypass-iran') : currentProxySettings?.bypassIran || false,
@@ -2293,7 +2293,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                 </div>
                 <h2>WARP PRO SETTINGS <span class="material-symbols-outlined">settings</span></h2>
                 <div class="form-control">
-					<label for="hiddifyNoiseMode"><span class="material-symbols-outlined">h_plus_mobiledata_badge</span> Hiddify mode</label>
+					<label for="hiddifyNoiseMode"><span class="material-symbols-outlined">star_half</span> Hiddify mode</label>
 					<input type="text" id="hiddifyNoiseMode" name="hiddifyNoiseMode" 
                         pattern="^(m[1-6]|h_[0-9A-Fa-f]{2}|g_([0-9A-Fa-f]{2}_){2}[0-9A-Fa-f]{2})$" 
                         title="Enter 'm1-m6', 'h_HEX', 'g_HEX_HEX_HEX' which HEX can be between 00 to ff"
