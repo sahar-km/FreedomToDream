@@ -1335,7 +1335,7 @@ const getWarpConfigs = async (env, client) => {
     });
 
     singboxWoWOutbounds.forEach((outbound, index) => {
-        if (outbound.tag.includes('WoW')) {
+        if (outbound.tag.includes('Berlin')) {
             singboxWarpConfig.outbounds.push(singboxWoWOutbounds[index], singboxWoWOutbounds[index + 1]);
             singboxWarpConfig.outbounds[0].outbounds.push(outbound.tag);
             if (domainRegex.test(outbound.server)) outboundDomains.push(outbound.server);
@@ -1490,7 +1490,7 @@ const buildWoWOutbounds = async (env, client, remoteDNS, localDNS, blockAds, byp
                 fake_packets_delay: `${proxySettings.noiseDelayMin}-${proxySettings.noiseDelayMax}`
             };
 
-            singboxOutbound.tag = i === 1 ? `warp-ir_${index + 1}` : ` Ni ${index + 1} `;    
+            singboxOutbound.tag = i === 1 ? `warp-ir_${index + 1}` : `Berlin ${index + 1} 🌍`;    
             
             if (i === 0) {
                 singboxOutbound.detour = `warp-ir_${index + 1}`;
