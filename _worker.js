@@ -1013,21 +1013,24 @@ const buildWorkerLessConfig = async (env, client) => {
 }
 
 const getFragmentConfigs = async (env, hostName, client) => {
-    let Configs = [];
-    let outbounds = [];
-    let proxySettings = {};
-    let proxyOutbound;
-    let proxyIndex = 1;
-    const bestFragValues = ['10-20', '20-30', '30-40', '40-50', '50-60', '60-70', 
-                            '70-80', '80-90', '90-100', '10-30', '20-40', '30-50', 
-                            '40-60', '50-70', '60-80', '70-90', '80-100', '100-200']
+      let Configs = [];
+      let outbounds = [];
+      let proxySettings = {};
+      let proxyOutbound;
+      let proxyIndex = 1;
+      const bestFragValues = ['3-8', '5-10', '10-20', '10-20', '20-30', '30-40', '40-50', 
+        '50-60', '60-70', '70-80', '80-90', '90-100', '50-100', '10-30', '20-40', '30-50',
+        '30-60', '40-60', '45-90', '50-70', '60-80', '60-90', '70-90', '80-100', '100-200'
+      ]
 
-    try {
-        proxySettings = await env.bpb.get("proxySettings", {type: 'json'});
-    } catch (error) {
+      try {
+        proxySettings = await env.bpb.get("proxySettings", {
+          type: 'json'
+        });
+      } catch (error) {
         console.log(error);
         throw new Error(`An error occurred while getting fragment configs - ${error}`);
-    }
+      }
 
     const {
         remoteDNS, 
