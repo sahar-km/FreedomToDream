@@ -2263,11 +2263,11 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                 </div>
                 <h2>WARP SETTINGS <span class="material-symbols-outlined">settings</span></h2>
 				<div class="form-control">
-                    <label for="wowEndpoint"><span class="material-symbols-outlined">call_merge</span> WoW endpoints</label>
+                    <label for="wowEndpoint"><span class="material-symbols-outlined">route</span> WoW endpoints</label>
                     <input type="text" id="wowEndpoint" name="wowEndpoint" value="${wowEndpoint.replaceAll(",", " , ")}" required>
 				</div>
 				<div class="form-control">
-                    <label for="warpEndpoints"><span class="material-symbols-outlined">roundabout_right</span> Warp endpoints</label>
+                    <label for="warpEndpoints"><span class="material-symbols-outlined">turn_sharp_right</span> Warp endpoints</label>
                     <input type="text" id="warpEndpoints" name="warpEndpoints" value="${warpEndpoints.replaceAll(",", " , ")}" required>
 				</div>
 				<div class="form-control">
@@ -2277,7 +2277,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                         title="Please enter a valid Warp Plus license in xxxxxxxx-xxxxxxxx-xxxxxxxx format">
 				</div>
                 <div class="form-control">
-                    <label><span class="material-symbols-outlined">numbers</span> Warp configs</label>
+                    <label><span class="material-symbols-outlined">lightning_stand</span> Warp configs</label>
                     <button id="refreshBtn" type="button" class="button" style="padding: 10px 0;" onclick="getWarpConfigs()">
                         Update<span class="material-symbols-outlined">autorenew</span>
                     </button>
@@ -2290,7 +2290,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                 </div>
                 <h2>WARP PRO SETTINGS <span class="material-symbols-outlined">settings</span></h2>
                 <div class="form-control">
-					<label for="hiddifyNoiseMode"><span class="material-symbols-outlined">format_text_clip</span> Hiddify mode</label>
+					<label for="hiddifyNoiseMode"><span class="material-symbols-outlined">h_mobiledata</span> Hiddify mode</label>
 					<input type="text" id="hiddifyNoiseMode" name="hiddifyNoiseMode" 
                         pattern="^(m[1-6]|h_[0-9A-Fa-f]{2}|g_([0-9A-Fa-f]{2}_){2}[0-9A-Fa-f]{2})$" 
                         title="Enter 'm1-m6', 'h_HEX', 'g_HEX_HEX_HEX' which HEX can be between 00 to ff"
