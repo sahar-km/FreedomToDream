@@ -1294,7 +1294,7 @@ const getWarpConfigs = async (env, client) => {
     xrayWarpConfig.routing.rules[xrayWarpConfig.routing.rules.length - 1].outboundTag = 'warp';
     delete xrayWarpConfig.observatory;
     delete xrayWarpConfig.routing.balancers;
-    xrayWarpBestPing.remarks = '☆ Xray WARP BestPing'
+    xrayWarpBestPing.remarks = '🟢 Xray WARP BestPing'
     xrayWarpBestPing.dns = await buildDNSObject(remoteDNS, localDNS, blockAds, bypassIran, blockPorn);
     xrayWarpBestPing.routing.rules = buildRoutingRules(localDNS, blockAds, bypassIran, blockPorn, bypassLAN, false, true);
     xrayWarpBestPing.outbounds.splice(0,1);
@@ -1461,7 +1461,7 @@ const buildWoWOutbounds = async (env, client, remoteDNS, localDNS, blockAds, byp
                 wnoisedelay: `${proxySettings.noiseDelayMin}-${proxySettings.noiseDelayMax}`
             };
 
-            xrayOutbound.tag = i === 1 ? `warp-ir_${index + 1}` : `warp-out_${index + 1}`;   
+            xrayOutbound.tag = i === 1 ? `TEHRAN_${index + 1} 🟢` : `warp-out_${index + 1}`;   
             
             if (i === 1) {
                 delete xrayOutbound.streamSettings;
