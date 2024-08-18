@@ -1286,8 +1286,8 @@ const getWarpConfigs = async (env, client) => {
     const {xray: xrayWarpOutbounds, singbox: singboxWarpOutbounds} = await buildWarpOutbounds(env, client, remoteDNS, localDNS, blockAds, bypassIran, blockPorn, bypassLAN, warpEndpoints) 
     const {xray: xrayWoWOutbounds, singbox: singboxWoWOutbounds} = await buildWoWOutbounds(env, client, remoteDNS, localDNS, blockAds, bypassIran, blockPorn, bypassLAN, wowEndpoint); 
     
-    singboxWarpConfig.outbounds[0].outbounds = ['★ singbox WARP BestPing'];
-    singboxWarpConfig.outbounds[1].tag = '★ singbox WARP BestPing';
+    singboxWarpConfig.outbounds[0].outbounds = ['★ Singbox WARP BestPing'];
+    singboxWarpConfig.outbounds[1].tag = '★ Singbox WARP BestPing';
     xrayWarpConfig.dns = await buildDNSObject(remoteDNS, localDNS, blockAds, bypassIran, blockPorn);
     xrayWarpConfig.routing.rules = buildRoutingRules(localDNS, blockAds, bypassIran, blockPorn, bypassLAN, false, false);
     xrayWarpConfig.outbounds.splice(0,1);
@@ -1309,7 +1309,7 @@ const getWarpConfigs = async (env, client) => {
     xrayWarpOutbounds.forEach((outbound, index) => {
         xrayWarpConfigs.push({
             ...xrayWarpConfig,
-            remarks: `WARP ${index + 1} 🟢`,
+            remarks: `Tehran ${index + 1} 🟢`,
             outbounds: [{...outbound, tag: 'warp'}, ...xrayWarpConfig.outbounds]
         });
     });
@@ -1317,7 +1317,7 @@ const getWarpConfigs = async (env, client) => {
     xrayWoWOutbounds.forEach((outbound, index) => {
         if (outbound.tag.includes('warp-out')) {
             let xrayWoWConfig = structuredClone(xrayWoWConfigTemp);
-            xrayWoWConfig.remarks = `WoW ${index/2 + 1} 🟡`;
+            xrayWoWConfig.remarks = `Berlin ${index/2 + 1} 🟡`;
             xrayWoWConfig.outbounds = [{...xrayWoWOutbounds[index]}, {...xrayWoWOutbounds[index + 1]}, ...xrayWoWConfig.outbounds];
             xrayWoWConfig.routing.rules[xrayWoWConfig.routing.rules.length - 1].outboundTag = outbound.tag;
             xrayWarpConfigs.push(xrayWoWConfig);
@@ -1415,7 +1415,7 @@ const buildWarpOutbounds = async (env, client, remoteDNS, localDNS, blockAds, by
             ...singboxOutbound,
             server: endpoint.includes('[') ? endpoint.match(ipv6Regex)[1] : endpoint.split(':')[0],
             server_port: endpoint.includes('[') ? +endpoint.match(portRegex)[0] : +endpoint.split(':')[1],
-            tag: `WARP ${index + 1} 🟢`
+            tag: `Tehran ${index + 1} 🟢`
         });
     })
     
@@ -1466,7 +1466,7 @@ const buildWoWOutbounds = async (env, client, remoteDNS, localDNS, blockAds, byp
             if (i === 1) {
                 delete xrayOutbound.streamSettings;
             } else {
-                xrayOutbound.streamSettings.sockopt.dialerProxy = `warp-ir_${index + 1} 🟢`;
+                xrayOutbound.streamSettings.sockopt.dialerProxy = `TEHRAN_${index + 1} 🟢`;
             }
     
             xrayOutbounds.push(xrayOutbound);
@@ -1490,10 +1490,10 @@ const buildWoWOutbounds = async (env, client, remoteDNS, localDNS, blockAds, byp
                 fake_packets_delay: `${proxySettings.noiseDelayMin}-${proxySettings.noiseDelayMax}`
             };
 
-            singboxOutbound.tag = i === 1 ? `warp-ir_${index + 1} 🟢` : `💦 WoW ${index + 1} 🟡`;     
+            singboxOutbound.tag = i === 1 ? `TEHRAN_${index + 1} 🟢` : `Berlin ${index + 1} 🟡`;     
             
             if (i === 0) {
-                singboxOutbound.detour = `warp-ir_${index + 1} 🟢`;
+                singboxOutbound.detour = `TEHRAN_${index + 1} 🟢`;
             } else {
                 delete singboxOutbound.detour;
             }
