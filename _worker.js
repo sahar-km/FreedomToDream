@@ -1415,7 +1415,7 @@ const buildWarpOutbounds = async (env, client, remoteDNS, localDNS, blockAds, by
             ...singboxOutbound,
             server: endpoint.includes('[') ? endpoint.match(ipv6Regex)[1] : endpoint.split(':')[0],
             server_port: endpoint.includes('[') ? +endpoint.match(portRegex)[0] : +endpoint.split(':')[1],
-            tag: `💦 Warp ${index + 1} 🇮🇷`
+            tag: `Tehran ${index + 1}  🟢`
         });
     })
     
@@ -1490,7 +1490,7 @@ const buildWoWOutbounds = async (env, client, remoteDNS, localDNS, blockAds, byp
                 fake_packets_delay: `${proxySettings.noiseDelayMin}-${proxySettings.noiseDelayMax}`
             };
 
-            singboxOutbound.tag = i === 1 ? `warp-ir_${index + 1}` : `💦 WoW ${index + 1} 🌍`;    
+            singboxOutbound.tag = i === 1 ? `warp-ir_${index + 1}` : `Berlin ${index + 1} 🟡`;    
             
             if (i === 0) {
                 singboxOutbound.detour = `warp-ir_${index + 1}`;
