@@ -2206,7 +2206,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 					<label for="outProxy"><span class="material-symbols-outlined">connecting_airports</span> Chain proxy</label>
 					<input type="text" id="outProxy" name="outProxy" value="${outProxy}">
 				</div>
-                <h2>FRAG/WARP ROUTING <span class="material-symbols-outlined">rule_settings</span></h2>
+                <h2>FRAG/WARP ROUTING <span class="material-symbols-outlined">settings</span></h2>
 				<div class="form-control" style="margin-bottom: 20px;">			
                     <div class="routing">
                         <input type="checkbox" id="block-ads" name="block-ads" style="margin: 0; grid-column: 2;" value="true" ${blockAds ? 'checked' : ''}>
@@ -2227,12 +2227,12 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 				</div>
                 <h2>PROXY IP <span class="material-symbols-outlined">data_object</span></h2>
 				<div class="form-control">
-					<label for="proxyIP"><span class="material-symbols-outlined">fingerprint</span> IP or Domain</label>
+					<label for="proxyIP"><span class="material-symbols-outlined">fingerprint</span> IP or domain</label>
 					<input type="text" id="proxyIP" name="proxyIP" value="${proxyIP}">
 				</div>
                 <h2>CLEAN IP <span class="material-symbols-outlined">data_object</span></h2>
 				<div class="form-control">
-					<label for="cleanIPs"><span class="material-symbols-outlined">rocket</span> Clean IPs</label>
+					<label for="cleanIPs"><span class="material-symbols-outlined">flag_2</span> Clean IPs</label>
 					<input type="text" id="cleanIPs" name="cleanIPs" value="${cleanIPs.replaceAll(",", " , ")}">
 				</div>
                 <div class="form-control">
@@ -2263,7 +2263,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                 </div>
                 <h2>WARP SETTINGS <span class="material-symbols-outlined">settings</span></h2>
 				<div class="form-control">
-                    <label for="wowEndpoint"><span class="material-symbols-outlined">airline_stops</span> WoW endpoints</label>
+                    <label for="wowEndpoint"><span class="material-symbols-outlined">call_merge</span> WoW endpoints</label>
                     <input type="text" id="wowEndpoint" name="wowEndpoint" value="${wowEndpoint.replaceAll(",", " , ")}" required>
 				</div>
 				<div class="form-control">
@@ -2277,20 +2277,20 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                         title="Please enter a valid Warp Plus license in xxxxxxxx-xxxxxxxx-xxxxxxxx format">
 				</div>
                 <div class="form-control">
-                    <label><span class="material-symbols-outlined">stat_3</span> Warp configs</label>
+                    <label><span class="material-symbols-outlined">numbers</span> Warp configs</label>
                     <button id="refreshBtn" type="button" class="button" style="padding: 10px 0;" onclick="getWarpConfigs()">
                         Update<span class="material-symbols-outlined">autorenew</span>
                     </button>
                 </div>
                 <div class="form-control">
-                    <label><span class="material-symbols-outlined">mystery</span> Endpoit scanner</label>
+                    <label><span class="material-symbols-outlined">mystery</span> Endpoint scanner</label>
                     <button type="button" class="button" style="padding: 10px 0;" onclick="copyToClipboard('bash <(curl -fsSL https://raw.githubusercontent.com/Ptechgithub/warp/main/endip/install.sh)', false)">
                         Copy Script<span class="material-symbols-outlined">terminal</span>
                     </button>
                 </div>
                 <h2>WARP PRO SETTINGS <span class="material-symbols-outlined">settings</span></h2>
                 <div class="form-control">
-					<label for="hiddifyNoiseMode"><span class="material-symbols-outlined">award_star</span> Hiddify mode</label>
+					<label for="hiddifyNoiseMode"><span class="material-symbols-outlined">format_text_clip</span> Hiddify mode</label>
 					<input type="text" id="hiddifyNoiseMode" name="hiddifyNoiseMode" 
                         pattern="^(m[1-6]|h_[0-9A-Fa-f]{2}|g_([0-9A-Fa-f]{2}_){2}[0-9A-Fa-f]{2})$" 
                         title="Enter 'm1-m6', 'h_HEX', 'g_HEX_HEX_HEX' which HEX can be between 00 to ff"
@@ -2304,7 +2304,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
                         value="${nikaNGNoiseMode}" required>
 				</div>
                 <div class="form-control">
-					<label for="noiseCountMin"><span class="material-symbols-outlined">airline_stops</span> Noise count</label>
+					<label for="noiseCountMin"><span class="material-symbols-outlined">function</span> Noise count</label>
 					<div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline;">
 						<input type="number" id="noiseCountMin" name="noiseCountMin"
     						value="${noiseCountMin}" required>
@@ -2314,7 +2314,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 					</div>
 				</div>
                 <div class="form-control">
-					<label for="noiseSizeMin"><span class="material-symbols-outlined">square_foot</span> Noise size</label>
+					<label for="noiseSizeMin"><span class="material-symbols-outlined">perm_data_setting</span> Noise size</label>
 					<div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline;">
 						<input type="number" id="noiseSizeMin" name="noiseSizeMin"
     						value="${noiseSizeMin}" required>
@@ -2340,7 +2340,7 @@ const renderHomePage = async (env, hostName, fragConfigs) => {
 				</div>
 			</form>
             <hr>            
-			<h2>NORMAL CONFIGS SUB 🔗</h2>
+			<h2>NORMAL CONFIGS <span class="material-symbols-outlined">code</span></h2>
 			<div class="table-container">
 				<table id="normal-configs-table">
 					<tr>
