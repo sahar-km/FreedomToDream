@@ -1490,10 +1490,10 @@ const buildWoWOutbounds = async (env, client, remoteDNS, localDNS, blockAds, byp
                 fake_packets_delay: `${proxySettings.noiseDelayMin}-${proxySettings.noiseDelayMax}`
             };
 
-            singboxOutbound.tag = i === 1 ? `Iran_${index + 1}` : `Berlin ${index + 1} 🟡`;    
+            singboxOutbound.tag = i === 1 ? `Iran ${index + 1} 🌍` : `Berlin ${index + 1} 🟡`;    
             
             if (i === 0) {
-                singboxOutbound.detour = `Iran_${index + 1}`;
+                singboxOutbound.detour = `Iran ${index + 1} 🌍`;
             } else {
                 delete singboxOutbound.detour;
             }
